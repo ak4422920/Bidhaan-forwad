@@ -1,12 +1,11 @@
 {
-    "api_id": 26385571,
-    "api_hash": "aac7a3c3c2f36e72201a6a5a21eb802a",
-    "phone": "+252619624090",
-    "bot_token": 8495685889:AAGM2RGzSioKB_MBDy2AyYy77DQx_IGjCHE,
+    "api_id": 12345678,
+    "api_hash": "your_api_hash_here",
+    "phone": "+1234567890",
+    "bot_token": null,
     "session_string": "your_session_string_here",
-    "mongo_uri": "mongodb+srv://BIGFIISH:iFyAm2DZqEzo76VW@cluster0.z6bhz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
-    "mongo_db_name": "@Bidhaanforwardbot",
-    "owner_id": 6169808990,
-    "log_channel": -1003151867792
+    "mongo_uri": "mongodb+srv://username:password@cluster.mongodb.net/?retryWrites=true&w=majority",
+    "mongo_db_name": "forward_bot",
+    "owner_id": 123456789,
+    "log_channel": null
 }
-
