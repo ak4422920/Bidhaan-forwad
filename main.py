@@ -4,8 +4,8 @@
 Telegram Multi-Channel Auto Forward Bot (Bot Mode - Multi-User Support)
 Main entry point for the bot application
 
-Created by: @BIG_FiiSH
-
+Created by: @amanbotz
+GitHub: https://github.com/theamanchaudhary
 """
 
 import sys
@@ -1776,6 +1776,7 @@ class ForwardBot:
                                 attributes = []
                                 force_document = False
                                 supports_streaming = False
+                                thumb = None  # For video thumbnail
                                 
                                 if hasattr(message.media, 'document'):
                                     doc = message.media.document
@@ -1783,6 +1784,20 @@ class ForwardBot:
                                     if hasattr(doc, 'attributes') and doc.attributes:
                                         attributes = doc.attributes
                                         print(f"   📝 Preserving {len(attributes)} media attributes")
+                                    
+                                    # Extract thumbnail from original media
+                                    if hasattr(doc, 'thumbs') and doc.thumbs:
+                                        try:
+                                            # Download thumbnail from original message (use largest available)
+                                            thumb_path = os.path.join(temp_dir, f"thumb_{message.id}_{int(asyncio.get_event_loop().time())}.jpg")
+                                            thumb = await client.download_media(message.media, file=thumb_path, thumb=-1)
+                                            if thumb and os.path.exists(thumb):
+                                                print(f"   📸 Thumbnail extracted: {thumb}")
+                                            else:
+                                                thumb = None
+                                        except Exception as thumb_err:
+                                            print(f"   ⚠️ Could not extract thumbnail: {thumb_err}")
+                                            thumb = None
                                     
                                     # Check if it's a video and supports streaming
                                     for attr in attributes:
@@ -1798,7 +1813,11 @@ class ForwardBot:
                                                 filename = getattr(attr, 'file_name', '')
                                                 print(f"   📄 Filename: {filename}")
                                 
-                                # Use send_file() with proper attributes
+                                elif hasattr(message.media, 'photo'):
+                                    # For photos, no special attributes needed, but ensure high quality
+                                    print(f"   📷 Photo media detected")
+                                
+                                # Use send_file() with proper attributes and thumbnail
                                 await asyncio.wait_for(
                                     client.send_file(
                                         destination, 
@@ -1807,6 +1826,7 @@ class ForwardBot:
                                         attributes=attributes if attributes else None,
                                         force_document=force_document,
                                         supports_streaming=supports_streaming,
+                                        thumb=thumb if thumb else None,
                                         progress_callback=upload_progress_callback
                                     ),
                                     timeout=upload_timeout
@@ -1821,6 +1841,14 @@ class ForwardBot:
                                 print(f"✓ Media re-uploaded successfully")
                                 print(f"   ⏱️ Upload took: {upload_duration:.1f}s")
                                 print(f"   ⚡ Average speed: {actual_upload_speed:.2f} MB/s")
+                                
+                                # Clean up thumbnail file if it exists
+                                if thumb and os.path.exists(thumb):
+                                    try:
+                                        os.remove(thumb)
+                                        print(f"✓ Thumbnail file cleaned up")
+                                    except:
+                                        pass
                                 
                                 # Delete progress message after successful upload
                                 if progress_msg:
@@ -2150,4 +2178,3 @@ if __name__ == '__main__':
     except Exception as e:
         print(f"\n❌ Fatal error: {e}")
         sys.exit(1)
-
