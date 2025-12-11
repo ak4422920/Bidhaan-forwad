@@ -1,4 +1,4 @@
-#!/usr/bin/env python3 - user_id
+#!/usr/bin/env python3 / user_id
 
 import sys
 import asyncio
@@ -170,7 +170,7 @@ class ForwardBot:
         return True
     
     async def log_to_channel(self, message: str, log_type: str = "info"):
-       —if not self.log_channel:
+       if not self.log_channel:
             return
         
         try:
@@ -2067,4 +2067,5 @@ if __name__ == '__main__':
     except Exception as e:
         print(f"\nFatal error: {e}")
         sys.exit(1)
+
 
