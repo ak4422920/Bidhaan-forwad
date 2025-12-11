@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3 - user_id
 
 import sys
 import asyncio
@@ -246,9 +246,10 @@ class ForwardBot:
                             user_client,
                             event.message,
                             dest_channel_id,
-                            is_restricted
+                            is_restricted,
+                            user_id
                         )
-                        print(f"Copied message {message_id} (date: {message_date}) (mode: {'copy' if not is_restricted else 'copy-restricted'})")
+                        print(f"Copied message {message_id} (date: {message_date}) (mode: {'copy' if not is_restricted else 'copy-restricted'}), passed user id: {user_id}")
                     else:
                         try:
                             await user_client.forward_messages(
@@ -262,9 +263,10 @@ class ForwardBot:
                                 user_client,
                                 event.message,
                                 dest_channel_id,
-                                True
+                                True,
+                                user_id
                             )
-                            print(f"Copied message {message_id} (date: {message_date}) (fallback)")
+                            print(f"Copied message {message_id} (date: {message_date}) (fallback), passed used id: {user_id}")
                     
                     await self.db.increment_forwards()
                     print(f"Successfully processed message {message_id} (date: {message_date}) for user {user_id}")
@@ -1500,34 +1502,40 @@ Created by @amanbotz
             print(f"Error in handle_user_channel_message: {e}")
             import traceback
             traceback.print_exc()
-    
-    async def _copy_message_with_media(self, client, message, destination, force_download=False):
+# Full _copy_message_with_media() with detailed logging for debugging
+    async def _copy_message_with_media(self, client, message, destination, force_download=False, user_id):
         import os
         import tempfile
+        import traceback
+        
+        print(f"[COPY] Starting media copy for message {message.id} (force_download={force_download})")
         
         try:
             text = message.message or message.text or ""
             
             if message.media:
-                media_file = None
-                temp_path = None
+                print(f"[COPY] Media detected: {type(message.media).__name__}")
+                
+                temp_dir = tempfile.gettempdir()
+                temp_path = os.path.join(temp_dir, f"tg_media_{message.id}_{int(asyncio.get_event_loop().time())}")
                 progress_msg = None
                 
                 try:
-                    print(f"Downloading media from restricted content...")
-                    print(f"   Media type: {type(message.media).__name__}")
-                    
-                    try:
-                        progress_msg = await client.send_message(
-                            destination,
+                    print(f"[COPY] Creating progress message to send in user id: {user_id}")
+                    if user_id is None:
+                        print("[COPY] ERROR: user_id is none! Progress message cannot be sent.")
+                    else:
+                        progress_msg = await self.bot_client.send_message(
+                            user_id,
                             "**Processing media...**\nStarting download..."
                         )
-                    except:
-                        pass
-                    
-                    temp_dir = tempfile.gettempdir()
-                    temp_path = os.path.join(temp_dir, f"tg_media_{message.id}_{int(asyncio.get_event_loop().time())}")
-                    
+                        print(f"[COPY] Progress message sent, ID: {progress_msg.id}")
+                except Exception as send_err:
+                    print(f"[COPY] FAILED to send progress message to user_id: {send_err}")
+                    traceback.print_exc()
+                    progress_msg = None
+                
+                try:
                     last_progress_update = 0
                     download_start_time = asyncio.get_event_loop().time()
                     last_update_time = download_start_time
@@ -1556,8 +1564,9 @@ Created by @amanbotz
                                                 f"{current / 1024 / 1024:.1f} MB / {total / 1024 / 1024:.1f} MB\n"
                                                 f"Speed: {speed_mbps:.2f} MB/s (avg: {avg_speed:.2f} MB/s)"
                                             )
-                                    except:
-                                        pass
+                                            print(f"[COPY] Download progress updated: {percent:.1f}%")
+                                    except Exception as edit_err:
+                                        print(f"[COPY] Failed to edit progress message: {edit_err}")
                                     
                                     last_update_time = current_time
                                     last_current_bytes = current
@@ -1567,7 +1576,7 @@ Created by @amanbotz
                     
                     for attempt in range(max_download_retries):
                         try:
-                            print(f"   Download attempt {attempt + 1}/{max_download_retries}...")
+                            print(f"[COPY] Download attempt {attempt + 1}/{max_download_retries}")
                             
                             file_size = 0
                             if hasattr(message.media, 'document') and hasattr(message.media.document, 'size'):
@@ -1577,10 +1586,7 @@ Created by @amanbotz
                             
                             file_size_mb = file_size / (1024 * 1024)
                             download_timeout = max(240, (file_size_mb / 1.5) + 180)
-                            expected_time = file_size_mb / 1.5
-                            print(f"   File size: {file_size_mb:.1f} MB")
-                            print(f"   Expected time: {expected_time:.0f}s, Timeout: {download_timeout:.0f}s ({download_timeout/60:.1f} min)")
-                            print(f"   Download speed assumption: 1.5 MB/s with 180s buffer")
+                            print(f"[COPY] Estimated size: {file_size_mb:.1f} MB, timeout: {download_timeout}s")
                             
                             downloaded_path = await asyncio.wait_for(
                                 client.download_media(
@@ -1591,9 +1597,10 @@ Created by @amanbotz
                                 timeout=download_timeout
                             )
                             if downloaded_path:
+                                print(f"[COPY] Download successful: {downloaded_path}")
                                 break
                         except asyncio.TimeoutError:
-                            print(f"   Download timeout on attempt {attempt + 1}")
+                            print(f"[COPY] Download timeout on attempt {attempt + 1}")
                             if progress_msg:
                                 try:
                                     await progress_msg.edit(f"Download timeout, retrying... ({attempt + 1}/{max_download_retries})")
@@ -1601,35 +1608,15 @@ Created by @amanbotz
                                     pass
                             if attempt < max_download_retries - 1:
                                 await asyncio.sleep(5)
-                        except (ConnectionError, ConnectionResetError, ConnectionRefusedError) as conn_err:
-                            print(f"   Connection error on attempt {attempt + 1}: {conn_err}")
-                            if progress_msg:
-                                try:
-                                    await progress_msg.edit(f"Connection error, retrying... ({attempt + 1}/{max_download_retries})")
-                                except:
-                                    pass
-                            if attempt < max_download_retries - 1:
-                                await asyncio.sleep(5)
-                                try:
-                                    if not client.is_connected():
-                                        await client.connect()
-                                except:
-                                    pass
                         except Exception as dl_err:
-                            print(f"   Download error on attempt {attempt + 1}: {dl_err}")
+                            print(f"[COPY] Download error on attempt {attempt + 1}: {dl_err}")
+                            traceback.print_exc()
                             if attempt < max_download_retries - 1:
                                 await asyncio.sleep(3)
                     
                     if downloaded_path and os.path.exists(downloaded_path):
-                        download_end_time = asyncio.get_event_loop().time()
-                        download_duration = download_end_time - download_start_time
                         file_size_actual = os.path.getsize(downloaded_path)
-                        actual_download_speed = (file_size_actual / (1024 * 1024)) / download_duration if download_duration > 0 else 0
-                        
-                        print(f"Media downloaded to: {downloaded_path}")
-                        print(f"   File size: {file_size_actual} bytes ({file_size_actual / 1024 / 1024:.2f} MB)")
-                        print(f"   Download took: {download_duration:.1f}s")
-                        print(f"   Average speed: {actual_download_speed:.2f} MB/s")
+                        print(f"[COPY] Media fully downloaded: {file_size_actual / 1024 / 1024:.2f} MB")
                         
                         if progress_msg:
                             try:
@@ -1638,8 +1625,8 @@ Created by @amanbotz
                                     f"Size: {file_size_actual / 1024 / 1024:.2f} MB\n"
                                     f"Starting upload..."
                                 )
-                            except:
-                                pass
+                            except Exception as edit_err:
+                                print(f"[COPY] Failed to update progress after download: {edit_err}")
                         
                         last_upload_progress = 0
                         upload_start_time = asyncio.get_event_loop().time()
@@ -1670,20 +1657,18 @@ Created by @amanbotz
                                                     f"{current / 1024 / 1024:.1f} MB / {total / 1024 / 1024:.1f} MB\n"
                                                     f"Speed: {speed_mbps:.2f} MB/s (avg: {avg_speed:.2f} MB/s)"
                                                 )
-                                        except:
-                                            pass
-                                        
-                                        last_upload_time = current_time
-                                        last_upload_bytes = current
+                                        except Exception as edit_err:
+                                            print(f"[COPY] Failed to update upload progress: {edit_err}")
+                                    
+                                    last_upload_time = current_time
+                                    last_upload_bytes = current
                         
                         max_upload_retries = 3
                         upload_success = False
                         
                         file_size_mb = file_size_actual / (1024 * 1024)
                         upload_timeout = max(360, (file_size_mb / 1.0) + 240)
-                        expected_upload_time = file_size_mb / 1.0
-                        print(f"   Expected upload time: {expected_upload_time:.0f}s, Timeout: {upload_timeout:.0f}s ({upload_timeout / 60:.1f} min)")
-                        print(f"   Upload speed assumption: 1.0 MB/s with 240s buffer")
+                        print(f"[COPY] Starting upload, timeout: {upload_timeout}s")
                         
                         attributes = []
                         force_document = False
@@ -1694,39 +1679,23 @@ Created by @amanbotz
                             doc = message.media.document
                             if hasattr(doc, 'attributes') and doc.attributes:
                                 attributes = doc.attributes
-                                print(f"   Preserving {len(attributes)} media attributes")
                             
                             if hasattr(doc, 'thumbs') and doc.thumbs:
                                 try:
-                                    thumb_path = os.path.join(temp_dir, f"thumb_{message.id}_{int(asyncio.get_event_loop().time())}.jpg")
+                                    thumb_path = os.path.join(temp_dir, f"thumb_{message.id}.jpg")
                                     thumb = await client.download_media(message.media, file=thumb_path, thumb=-1)
-                                    if thumb and os.path.exists(thumb):
-                                        print(f"   Thumbnail extracted: {thumb}")
-                                    else:
-                                        thumb = None
                                 except Exception as thumb_err:
-                                    print(f"   Could not extract thumbnail: {thumb_err}")
+                                    print(f"[COPY] Thumbnail error: {thumb_err}")
                                     thumb = None
                             
                             for attr in attributes:
                                 if hasattr(attr, '__class__'):
-                                    attr_name = attr.__class__.__name__
-                                    if attr_name == 'DocumentAttributeVideo':
+                                    if attr.__class__.__name__ == 'DocumentAttributeVideo':
                                         supports_streaming = getattr(attr, 'supports_streaming', False)
-                                        duration = getattr(attr, 'duration', 0)
-                                        width = getattr(attr, 'w', 0)
-                                        height = getattr(attr, 'h', 0)
-                                        print(f"   Video: {duration}s, {width}x{height}, streaming: {supports_streaming}")
-                                    elif attr_name == 'DocumentAttributeFilename':
-                                        filename = getattr(attr, 'file_name', '')
-                                        print(f"   Filename: {filename}")
-                        
-                        elif hasattr(message.media, 'photo'):
-                            print(f"   Photo media detected")
                         
                         for attempt in range(max_upload_retries):
                             try:
-                                print(f"   Upload attempt {attempt + 1}/{max_upload_retries}...")
+                                print(f"[COPY] Upload attempt {attempt + 1}/{max_upload_retries}")
                                 
                                 await asyncio.wait_for(
                                     client.send_file(
@@ -1742,30 +1711,17 @@ Created by @amanbotz
                                     timeout=upload_timeout
                                 )
                                 upload_success = True
-                                
-                                upload_end_time = asyncio.get_event_loop().time()
-                                upload_duration = upload_end_time - upload_start_time
-                                actual_upload_speed = (file_size_actual / (1024 * 1024)) / upload_duration if upload_duration > 0 else 0
-                                
-                                print(f"Media re-uploaded successfully")
-                                print(f"   Upload took: {upload_duration:.1f}s")
-                                print(f"   Average speed: {actual_upload_speed:.2f} MB/s")
-                                
-                                if thumb and os.path.exists(thumb):
-                                    try:
-                                        os.remove(thumb)
-                                        print(f"Thumbnail file cleaned up")
-                                    except:
-                                        pass
+                                print(f"[COPY] Upload successful")
                                 
                                 if progress_msg:
                                     try:
                                         await progress_msg.delete()
-                                    except:
-                                        pass
+                                        print(f"[COPY] Progress message deleted")
+                                    except Exception as del_err:
+                                        print(f"[COPY] Failed to delete progress message: {del_err}")
                                 break
                             except asyncio.TimeoutError:
-                                print(f"   Upload timeout on attempt {attempt + 1}")
+                                print(f"[COPY] Upload timeout on attempt {attempt + 1}")
                                 if progress_msg:
                                     try:
                                         await progress_msg.edit(f"Upload timeout, retrying... ({attempt + 1}/{max_upload_retries})")
@@ -1773,44 +1729,27 @@ Created by @amanbotz
                                         pass
                                 if attempt < max_upload_retries - 1:
                                     await asyncio.sleep(5)
-                            except (ConnectionError, ConnectionResetError, ConnectionRefusedError) as conn_err:
-                                print(f"   Connection error on attempt {attempt + 1}: {conn_err}")
-                                if progress_msg:
-                                    try:
-                                        await progress_msg.edit(f"Connection error, retrying... ({attempt + 1}/{max_upload_retries})")
-                                    except:
-                                        pass
-                                if attempt < max_upload_retries - 1:
-                                    await asyncio.sleep(5)
-                                    try:
-                                        if not client.is_connected():
-                                            await client.connect()
-                                    except:
-                                        pass
                             except Exception as up_err:
-                                print(f"   Upload error on attempt {attempt + 1}: {up_err}")
+                                print(f"[COPY] Upload error on attempt {attempt + 1}: {up_err}")
+                                traceback.print_exc()
                                 if attempt < max_upload_retries - 1:
                                     await asyncio.sleep(3)
                         
                         if not upload_success:
-                            print(f"   Failed to upload after {max_upload_retries} attempts")
+                            print(f"[COPY] Upload failed after all retries")
                             if progress_msg:
                                 try:
-                                    await progress_msg.edit(
-                                        f"**Upload Failed**\n"
-                                        f"File size: {file_size_actual / 1024 / 1024:.2f} MB\n"
-                                        f"All {max_upload_retries} attempts failed"
-                                    )
+                                    await progress_msg.edit("**Upload Failed**\nAll attempts failed")
                                 except:
                                     pass
                         
                         try:
                             os.remove(downloaded_path)
-                            print(f"Temp file cleaned up")
+                            print(f"[COPY] Temp file cleaned up")
                         except:
                             pass
                     else:
-                        print(f"Media download returned None or file doesn't exist")
+                        print(f"[COPY] Download failed or file missing")
                         if progress_msg:
                             try:
                                 await progress_msg.edit("Download failed")
@@ -1818,11 +1757,9 @@ Created by @amanbotz
                                 pass
                         if text:
                             await client.send_message(destination, text)
-                            print(f"Sent text only (media download failed)")
                 
                 except Exception as media_error:
-                    print(f"Media handling error: {media_error}")
-                    import traceback
+                    print(f"[COPY] Media handling exception: {media_error}")
                     traceback.print_exc()
                     
                     if temp_path and os.path.exists(temp_path):
@@ -1832,31 +1769,24 @@ Created by @amanbotz
                             pass
                     
                     try:
-                        print(f"   Trying direct media reference...")
-                        await client.send_message(
-                            destination,
-                            text,
-                            file=message.media
-                        )
-                        print(f"Sent using media reference")
+                        await client.send_message(destination, text, file=message.media)
+                        print(f"[COPY] Sent using direct media reference (fallback)")
                     except Exception as ref_error:
-                        print(f"Media reference also failed: {ref_error}")
+                        print(f"[COPY] Direct reference failed: {ref_error}")
                         if text:
                             await client.send_message(destination, text)
-                            print(f"Sent text only (all media methods failed)")
             
             elif text:
                 await client.send_message(destination, text)
-                print(f"Sent text message")
+                print(f"[COPY] Sent text-only message")
             
             else:
-                print(f"Empty message, skipping")
+                print(f"[COPY] Empty message, skipped")
         
         except Exception as e:
-            print(f"Error in _copy_message_with_media: {e}")
-            import traceback
+            print(f"[COPY] Critical error in _copy_message_with_media: {e}")
             traceback.print_exc()
-            raise
+            raise    
     
     async def cmd_stats(self, event, user_id: int):
         stats = await self.db.get_stats()
@@ -2137,3 +2067,4 @@ if __name__ == '__main__':
     except Exception as e:
         print(f"\nFatal error: {e}")
         sys.exit(1)
+
