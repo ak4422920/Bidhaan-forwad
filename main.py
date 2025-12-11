@@ -247,8 +247,8 @@ class ForwardBot:
                             user_client,
                             event.message,
                             dest_channel_id,
-                            is_restricted,
-                            user_id
+                            user_id,
+                            is_restricted
                         )
                         print(f"Copied message {message_id} (date: {message_date}) (mode: {'copy' if not is_restricted else 'copy-restricted'}), passed user id: {user_id}")
                     else:
@@ -264,8 +264,8 @@ class ForwardBot:
                                 user_client,
                                 event.message,
                                 dest_channel_id,
-                                True,
-                                user_id
+                                user_id,
+                                True
                             )
                             print(f"Copied message {message_id} (date: {message_date}) (fallback), passed used id: {user_id}")
                     
@@ -1504,7 +1504,7 @@ Created by @amanbotz
             import traceback
             traceback.print_exc()
 # Full _copy_message_with_media() with detailed logging for debugging
-    async def _copy_message_with_media(self, client, message, destination, force_download=False, user_id):
+    async def _copy_message_with_media(self, client, message, destination, user_id, force_download=False):
         import os
         import tempfile
         import traceback
@@ -2068,6 +2068,7 @@ if __name__ == '__main__':
     except Exception as e:
         print(f"\nFatal error: {e}")
         sys.exit(1)
+
 
 
 
