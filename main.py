@@ -1,4 +1,4 @@
-#!/usr/bin/env python3 \ user_id
+#!/usr/bin/env python3 | user_id
 
 import sys
 import asyncio
@@ -170,9 +170,9 @@ class ForwardBot:
         return True
     
     async def log_to_channel(self, message: str, log_type: str = "info"):
-       if not self.log_channel:
+        if not self.log_channel:
             return
-        
+
         try:
             emoji_map = {
                 "info": "Info",
@@ -187,17 +187,18 @@ class ForwardBot:
                 "channel_remove": "Channel Removed",
                 "admin": "Admin"
             }
-            
+
             emoji = emoji_map.get(log_type, "Info")
-            
+
             from datetime import datetime
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            
-            formatted_message = f"{emoji} **{log_type.upper()}**\n\n{message}\n\n{ timestamp }"
-            
+
+            formatted_message = f"{emoji} **{log_type.upper()}**\n\n{message}\n\n{timestamp}"
+
             await self.bot_client.send_message(self.log_channel, formatted_message)
-       except Exception as e:
-           print(f"Failed to send log: {e}")
+
+        except Exception as e:
+            print(f"Failed to send log: {e}")
     
     async def process_message_queue(self, user_id: int):
         queue = self.message_queues.get(user_id)
@@ -2067,6 +2068,7 @@ if __name__ == '__main__':
     except Exception as e:
         print(f"\nFatal error: {e}")
         sys.exit(1)
+
 
 
 
