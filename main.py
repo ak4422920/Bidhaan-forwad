@@ -41,8 +41,8 @@ class ForwardBot:
         print("\n" + "="*60)
         print("TELEGRAM AUTO FORWARD BOT - SETUP")
         print("="*60)
-        print("\nCreated by: @amanbotz")
-        print("GitHub: github.com/theamanchaudhary\n")
+        print("\nCreated by: @AkMovieVerse")
+        print("GitHub: github.com\n")
         
         print("Step 1: Telegram API Credentials")
         print("Get your credentials from https://my.telegram.org\n")
@@ -163,7 +163,7 @@ class ForwardBot:
             f"Total Users: {user_count}\n"
             f"Total Forwards: {stats.get('total_forwards', 0)}\n"
             f"Status: Online\n\n"
-            f"Created by @amanbotz",
+            f"Created by @akmovieshubx",
             "success"
         )
         
@@ -417,7 +417,7 @@ class ForwardBot:
             
             await event.reply(
                 "Use /start to see available commands\n\n"
-                "Created by @amanbotz"
+                "Created by @akmovieverse"
             )
         
         except Exception as e:
@@ -874,7 +874,7 @@ class ForwardBot:
 Note: Admin commands work without login
 """
         
-        help_text += "\nCreated by @amanbotz\nGitHub: github.com/theamanchaudhary"
+        help_text += "\nCreated by @akmovieverse\nGitHub: github.com/"
         
         await event.reply(help_text)
     
@@ -2068,6 +2068,7 @@ if __name__ == '__main__':
     except Exception as e:
         print(f"\nFatal error: {e}")
         sys.exit(1)
+
 
 
 
