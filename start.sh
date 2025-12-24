@@ -2,7 +2,7 @@
 # Heroku startup script
 
 echo "🚀 Starting Telegram Auto Forward Bot on Heroku..."
-echo "✨ Created by: @BIG_FiiSH"
+echo "✨ Created by: @NullZoro"
 echo "🔗 "
 
 # Check if all required environment variables are set
