@@ -136,8 +136,8 @@ def main():
     print("🤖 TELEGRAM AUTO FORWARD BOT")
     print("   Deployment Verification Script")
     print("="*60)
-    print("\n✨ Created by: @amanbotz")
-    print("🔗 GitHub: github.com/theamanchaudhary\n")
+    print("\n✨ Created by: @AkMovieVerse")
+    print("🔗 GK: https://t.me/akmovieshubx\n")
     
     checks = [
         check_docker(),
@@ -167,3 +167,4 @@ def main():
 
 if __name__ == '__main__':
     sys.exit(main())
+
