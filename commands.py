@@ -146,8 +146,8 @@ This is an auto-forward bot that helps channel owners automatically forward mess
 📞 **Need Help?**
 Contact the bot owner for setup and support.
 
-✨ Created by @amanbotz
-🔗 GitHub: github.com/theamanchaudhary
+✨ Created by @AkMovieVerse
+🔗 GK: https://t.me/Akmovieshubx
 """
         
         await event.reply(help_text)
@@ -384,8 +384,8 @@ Contact the bot owner for setup and support.
 • Days Active: {days_active}
 • Avg Forwards/Day: {stats['total_forwards'] // max(days_active, 1)}
 
-✨ Created by @amanbotz
-🔗 GitHub: github.com/theamanchaudhary
+✨ Created by @AkMovieVerse
+🔗 GK: https://t.me/Akmovieshubx
 """
         await event.reply(message)
     
@@ -415,8 +415,8 @@ Contact the bot owner for setup and support.
             "🛑 **Stopping bot...**\n\n"
             "Bot will shutdown now.\n\n"
             "Run `python main.py start` to restart.\n\n"
-            "✨ Created by @amanbotz\n"
-            "🔗 GitHub: github.com/theamanchaudhary"
+            "✨ Created by @AkMovieVerse\n"
+            "🔗 GitHub: github.com"
         )
         print("\n✓ Bot stopped by command")
         await self.client.disconnect()
@@ -492,10 +492,11 @@ Contact the bot owner for setup and support.
         elif data == "support":
             await event.edit(
                 "📞 **Support**\n\n"
-                "Contact: @amanbotz\n"
-                "GitHub: github.com/theamanchaudhary",
+                "Contact: @AkMovieVerse\n"
+                "GK: https://t.me/Akmovieshubx",
                 buttons=[[Button.inline("« Back", b"start")]]
             )
         
         elif data == "start":
             await self.cmd_start([], event)
+
