@@ -13,17 +13,17 @@ from dataclasses import dataclass, asdict
 class BotConfig:
     """Bot configuration data class"""
     # Telegram API Credentials
-    api_id: int = int(os.getenv('API_ID', '26385571'))
-    api_hash: str = os.getenv('API_HASH', 'aac7a3c3c2f36e72201a6a5a21eb802a')
-    bot_token: str = os.getenv('BOT_TOKEN', '8495685889:AAGM2RGzSioKB_MBDy2AyYy77DQx_IGjCHE')
+    api_id: int = int(os.getenv('API_ID', ''))
+    api_hash: str = os.getenv('API_HASH', '')
+    bot_token: str = os.getenv('BOT_TOKEN', '')
     
     # MongoDB Configuration
-    mongo_uri: str = os.getenv('MONGO_URI', 'mongodb+srv://BIGFIISH:iFyAm2DZqEzo76VW@cluster0.z6bhz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
-    mongo_db_name: str = os.getenv('MONGO_DB_NAME', 'Bidhaanforwardbot')
+    mongo_uri: str = os.getenv('MONGO_URI', '')
+    mongo_db_name: str = os.getenv('MONGO_DB_NAME', '')
     
     # Bot Settings
-    owner_id: int = int(os.getenv('OWNER_ID', '6169808990'))
-    log_channel: int = int(os.getenv('LOG_CHANNEL', '-1003151867792'))
+    owner_id: int = int(os.getenv('OWNER_ID', '8371607189'))
+    log_channel: int = int(os.getenv('LOG_CHANNEL', '-1002416220645'))
 
 class ConfigManager:
     """Manages bot configuration"""
