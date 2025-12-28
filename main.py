@@ -152,8 +152,8 @@ class ForwardBot:
         
         print("\nUsers can start the bot and login with their accounts!")
         print("Press Ctrl+C to stop the bot\n")
-        print("Created by: @amanbotz")
-        print("GitHub: github.com/theamanchaudhary\n")
+        print("Created by: @AkMovieVerse")
+        print("GitHub: github.com\n")
         
         user_count = await self.db.get_user_count()
         stats = await self.db.get_stats()
@@ -535,8 +535,8 @@ class ForwardBot:
 **Get Started:**
 {get_started_text}
 
-**Created by:** @amanbotz
-**GitHub:** github.com/theamanchaudhary
+**Created by:** @AkMovieVerse
+**GitHub:** github.com/
 """
         await event.reply(welcome_text, buttons=buttons)
     
@@ -654,7 +654,7 @@ class ForwardBot:
                     f"• /addsource - Add source channels\n"
                     f"• /setdest - Set destination\n"
                     f"• /list - View your channels\n\n"
-                    f"Created by @amanbotz"
+                    f"Created by @AkMovieVerse"
                 )
                 
                 await self.log_to_channel(
@@ -1178,7 +1178,7 @@ Created by @amanbotz
 • Status: {queue_status}
 • Sequential Processing: Enabled
 
-Created by @amanbotz
+Created by @AkMovieVerse
 """
         await event.reply(status)
     
@@ -2024,15 +2024,15 @@ Created by @amanbotz
                 except:
                     pass
             print("Thanks for using Auto Forward Bot!")
-            print("GitHub: github.com/theamanchaudhary\n")
+            print("GitHub: github.com/\n")
 
 
 def print_help():
     print("\n" + "="*60)
     print("TELEGRAM AUTO FORWARD BOT")
     print("="*60)
-    print("\nCreated by: @amanbotz")
-    print("GitHub: github.com/theamanchaudhary\n")
+    print("\nCreated by: @AkMovieVerse")
+    print("GitHub: github.com/\n")
     print("Usage: python main.py [command]\n")
     print("Commands:")
     print("  setup    - Configure the bot")
@@ -2068,6 +2068,7 @@ if __name__ == '__main__':
     except Exception as e:
         print(f"\nFatal error: {e}")
         sys.exit(1)
+
 
 
 
