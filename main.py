@@ -153,7 +153,7 @@ class ForwardBot:
         print("\nUsers can start the bot and login with their accounts!")
         print("Press Ctrl+C to stop the bot\n")
         print("Created by: @AkMovieVerse")
-        print("GitHub: github.com\n")
+        print("Hub: @instawallpaper\n")
         
         user_count = await self.db.get_user_count()
         stats = await self.db.get_stats()
@@ -536,7 +536,7 @@ class ForwardBot:
 {get_started_text}
 
 **Created by:** @AkMovieVerse
-**GitHub:** github.com/
+**Hub:** @instawallpaper
 """
         await event.reply(welcome_text, buttons=buttons)
     
@@ -874,7 +874,7 @@ class ForwardBot:
 Note: Admin commands work without login
 """
         
-        help_text += "\nCreated by @akmovieverse\nGitHub: github.com/"
+        help_text += "\nCreated by @akmovieverse\nHub: @instawallpaper/"
         
         await event.reply(help_text)
     
@@ -908,7 +908,7 @@ Note: Admin commands work without login
 
 Use /list to see your channels
 
-Created by @amanbotz
+Created by @akmovieverse
 """
         await event.reply(info)
     
@@ -1799,7 +1799,7 @@ Created by @AkMovieVerse
             f"Logged In: {sessions}\n"
             f"Forwards: {stats['total_forwards']}\n"
             f"Banned: {stats['banned_users']}\n\n"
-            f"Created by @amanbotz"
+            f"Created by @akmovieverse"
         )
     
     async def cmd_users(self, event, user_id: int):
@@ -2024,7 +2024,7 @@ Created by @AkMovieVerse
                 except:
                     pass
             print("Thanks for using Auto Forward Bot!")
-            print("GitHub: github.com/\n")
+            print("Hub: @instawallpaper\n")
 
 
 def print_help():
@@ -2032,7 +2032,7 @@ def print_help():
     print("TELEGRAM AUTO FORWARD BOT")
     print("="*60)
     print("\nCreated by: @AkMovieVerse")
-    print("GitHub: github.com/\n")
+    print("Join: @instawallpaper\n")
     print("Usage: python main.py [command]\n")
     print("Commands:")
     print("  setup    - Configure the bot")
@@ -2068,6 +2068,7 @@ if __name__ == '__main__':
     except Exception as e:
         print(f"\nFatal error: {e}")
         sys.exit(1)
+
 
 
 
