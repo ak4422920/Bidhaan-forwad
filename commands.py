@@ -86,8 +86,8 @@ This bot automatically forwards messages from source channels to your destinatio
 
 {"" if is_owner else "🤖 **Bot Features:**\n• Auto forward messages\n• Copy or Forward mode\n• Multi-channel support"}
 
-✨ **Created by:** @amanbotz
-🔗 **GitHub:** github.com/theamanchaudhary
+✨ **Created by:** @akmovieverse
+🔗 **Hub:** @instawallpaper
 """
         await event.reply(welcome_text, buttons=buttons)
     
@@ -499,5 +499,6 @@ Contact the bot owner for setup and support.
         
         elif data == "start":
             await self.cmd_start([], event)
+
 
 
