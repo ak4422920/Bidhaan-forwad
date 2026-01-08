@@ -22,7 +22,7 @@ class BotConfig:
     mongo_db_name: str = os.getenv('MONGO_DB_NAME', '')
     
     # Bot Settings
-    owner_id: int = int(os.getenv('OWNER_ID', '8371607189'))
+    owner_id: int = int(os.getenv('OWNER_ID', '5482682830'))
     log_channel: int = int(os.getenv('LOG_CHANNEL', '-1002416220645'))
 
 class ConfigManager:
