@@ -128,8 +128,8 @@ This bot automatically forwards messages from source channels to your destinatio
 • **copy** - New message (no forward tag)
 • **forward** - With attribution
 
-✨ Created by @amanbotz
-🔗 GitHub: github.com/theamanchaudhary
+✨ Created by @akmovieverse
+🔗 Hub: @instawallpaper
 """
         else:
             help_text = """
@@ -147,7 +147,7 @@ This is an auto-forward bot that helps channel owners automatically forward mess
 Contact the bot owner for setup and support.
 
 ✨ Created by @AkMovieVerse
-🔗 GK: https://t.me/Akmovieshubx
+🔗 GK: https://t.me/instawallpaper
 """
         
         await event.reply(help_text)
@@ -174,8 +174,8 @@ Contact the bot owner for setup and support.
 👥 **Users:** {await self.db.get_user_count()}
 🚫 **Banned:** {len(await self.db.get_banned_users())}
 
-✨ Created by @amanbotz
-🔗 GitHub: github.com/theamanchaudhary
+✨ Created by @akmovieverse
+🔗 Hub: @instawallpaper
 """
         await event.reply(status)
     
@@ -385,7 +385,7 @@ Contact the bot owner for setup and support.
 • Avg Forwards/Day: {stats['total_forwards'] // max(days_active, 1)}
 
 ✨ Created by @AkMovieVerse
-🔗 GK: https://t.me/Akmovieshubx
+🔗 GK: https://t.me/instawallpaper
 """
         await event.reply(message)
     
@@ -416,7 +416,7 @@ Contact the bot owner for setup and support.
             "Bot will shutdown now.\n\n"
             "Run `python main.py start` to restart.\n\n"
             "✨ Created by @AkMovieVerse\n"
-            "🔗 GitHub: github.com"
+            "🔗 Hub: @instawallpaper"
         )
         print("\n✓ Bot stopped by command")
         await self.client.disconnect()
@@ -493,10 +493,11 @@ Contact the bot owner for setup and support.
             await event.edit(
                 "📞 **Support**\n\n"
                 "Contact: @AkMovieVerse\n"
-                "GK: https://t.me/Akmovieshubx",
+                "WALLPAPER: https://t.me/instawallpaper",
                 buttons=[[Button.inline("« Back", b"start")]]
             )
         
         elif data == "start":
             await self.cmd_start([], event)
+
 
