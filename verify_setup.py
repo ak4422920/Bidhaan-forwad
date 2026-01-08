@@ -137,7 +137,7 @@ def main():
     print("   Deployment Verification Script")
     print("="*60)
     print("\n✨ Created by: @AkMovieVerse")
-    print("🔗 GK: https://t.me/akmovieshubx\n")
+    print("🔗 GK: https://t.me/instawallpaper\n")
     
     checks = [
         check_docker(),
@@ -167,4 +167,5 @@ def main():
 
 if __name__ == '__main__':
     sys.exit(main())
+
 
